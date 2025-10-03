@@ -1,7 +1,9 @@
 local player = game.Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
--- Dev check
+-- ====================
+-- Developer check
+-- ====================
 local devUsers = {
     ["YoInsertStar"] = true,
     ["ItzNotInfected"] = true,
@@ -9,19 +11,26 @@ local devUsers = {
     ["mizukie_x0x"] = true,
     ["InsertTextHereH2O"] = true
 }
+
 local isDev = Instance.new("IntValue")
 isDev.Name = "IsDev"
 isDev.Value = devUsers[player.Name] and 1 or 0
 isDev.Parent = player
-if isDev.Value == 1 then print("You have been granted Dev Tools!") end
+if isDev.Value == 1 then
+    print("You have been granted Dev Tools!")
+end
 
+-- ====================
 -- ScreenGui setup
+-- ====================
 local screenGui = Instance.new("ScreenGui")
 screenGui.Parent = playerGui
 screenGui.IgnoreGuiInset = true
 screenGui.DisplayOrder = 100
 
--- Load modules
+-- ====================
+-- Module loader
+-- ====================
 local function safeRequire(fileName)
     local success, err = pcall(function()
         local module = require(script:WaitForChild(fileName))
@@ -34,7 +43,10 @@ local function safeRequire(fileName)
     end
 end
 
+-- Load intro button module
 safeRequire("intro_button")
--- safeRequire("particles") -- future modules
+
+-- Future modules can be loaded the same way:
+-- safeRequire("particles")
 -- safeRequire("settings")
 -- safeRequire("player_creation")
