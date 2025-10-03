@@ -1,198 +1,146 @@
--- Voxel Studio Intro + Comet Animator Button (Mobile iOS)
--- Gradient "C" logo + button color updated + thicker font + black strokes + cooldown + Dev check
+-- intro_button.lua
+local module = {}
 
-local player = game.Players.LocalPlayer
-local playerGui = player:WaitForChild("PlayerGui")
-local TweenService = game:GetService("TweenService")
-local UserInputService = game:GetService("UserInputService")
+function module.Init(player, screenGui)
+    local TweenService = game:GetService("TweenService")
+    local UserInputService = game:GetService("UserInputService")
 
--- ====================
--- Developer check
--- ====================
-local devUsers = {
-    ["YoInsertStar"] = true,
-    ["ItzNotInfected"] = true
-}
+    -- Overlay for animation
+    local overlay = Instance.new("Frame")
+    overlay.Size = UDim2.new(1,0,1,0)
+    overlay.Position = UDim2.new(0,0,0,0)
+    overlay.BackgroundColor3 = Color3.new(0,0,0)
+    overlay.BackgroundTransparency = 1
+    overlay.ZIndex = 100
+    overlay.Parent = screenGui
 
--- Create IntValue to store developer status
-local isDev = Instance.new("IntValue")
-isDev.Name = "IsDev"
-isDev.Value = 0 -- default
-isDev.Parent = player
+    -- Gradient "C" Logo
+    local logo = Instance.new("TextLabel")
+    logo.Size = UDim2.new(0,200,0,200)
+    logo.AnchorPoint = Vector2.new(0.5,0.5)
+    logo.Position = UDim2.new(0.5,0,0.3,0)
+    logo.Text = "C"
+    logo.TextScaled = true
+    logo.Font = Enum.Font.GothamBold
+    logo.BackgroundTransparency = 1
+    logo.ZIndex = 101
+    logo.Parent = screenGui
 
--- Check username
-if devUsers[player.Name] then
-    isDev.Value = 1
-    print("You have been granted Dev Tools!")
-end
+    local gradient = Instance.new("UIGradient")
+    gradient.Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(0,255,255)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(200,170,255))
+    }
+    gradient.Rotation = 45
+    gradient.Parent = logo
 
--- ====================
--- ScreenGui + Overlay
--- ====================
-local screenGui = Instance.new("ScreenGui")
-screenGui.Parent = playerGui
-screenGui.IgnoreGuiInset = true
-screenGui.DisplayOrder = 100
+    -- Intro animation
+    local darkTween = TweenService:Create(overlay, TweenInfo.new(0.3, Enum.EasingStyle.Quad), {BackgroundTransparency = 0.3})
+    darkTween:Play()
+    darkTween.Completed:Wait()
 
-local overlay = Instance.new("Frame")
-overlay.Size = UDim2.new(1,0,1,0)
-overlay.Position = UDim2.new(0,0,0,0)
-overlay.BackgroundColor3 = Color3.new(0,0,0)
-overlay.BackgroundTransparency = 1
-overlay.ZIndex = 100
-overlay.Parent = screenGui
+    local fallTween = TweenService:Create(logo, TweenInfo.new(0.6, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Position = UDim2.new(0.5,0,0.5,0)})
+    fallTween:Play()
+    fallTween.Completed:Wait()
 
--- ====================
--- Gradient "C" Logo
--- ====================
-local logo = Instance.new("TextLabel")
-logo.Size = UDim2.new(0,200,0,200)
-logo.AnchorPoint = Vector2.new(0.5,0.5)
-logo.Position = UDim2.new(0.5,0,0.3,0)
-logo.Text = "C"
-logo.TextScaled = true
-logo.Font = Enum.Font.GothamBold -- thicker font
-logo.BackgroundTransparency = 1
-logo.ZIndex = 101
-logo.Parent = screenGui
+    local scaleTween = TweenService:Create(logo, TweenInfo.new(0.5, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Size = UDim2.new(0,220,0,220)})
+    scaleTween:Play()
+    scaleTween.Completed:Wait()
 
-local gradient = Instance.new("UIGradient")
-gradient.Color = ColorSequence.new{
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(0,255,255)),   -- cyan
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(200,170,255))  -- light purple
-}
-gradient.Rotation = 45
-gradient.Parent = logo
-logo.TextColor3 = Color3.new(1,1,1)
+    local shrinkTween = TweenService:Create(logo, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {Size = UDim2.new(0,50,0,50), Position = UDim2.new(0.5,0,0.5,0)})
+    shrinkTween:Play()
+    shrinkTween.Completed:Wait()
 
--- ====================
--- Intro Animation
--- ====================
-local darkTween = TweenService:Create(overlay, TweenInfo.new(0.3, Enum.EasingStyle.Quad), {BackgroundTransparency = 0.3})
-darkTween:Play()
-darkTween.Completed:Wait()
+    local brightenTween = TweenService:Create(overlay, TweenInfo.new(0.3, Enum.EasingStyle.Quad), {BackgroundTransparency = 1})
+    brightenTween:Play()
+    brightenTween.Completed:Wait()
 
-local fallTween = TweenService:Create(logo, TweenInfo.new(0.6, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Position = UDim2.new(0.5,0,0.5,0)})
-fallTween:Play()
-fallTween.Completed:Wait()
+    logo:Destroy()
+    overlay:Destroy()
 
-local scaleTween = TweenService:Create(logo, TweenInfo.new(0.5, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Size = UDim2.new(0,220,0,220)})
-scaleTween:Play()
-scaleTween.Completed:Wait()
+    -- Circular Comet Animator Button
+    local button = Instance.new("Frame")
+    button.Size = UDim2.new(0,80,0,80)
+    button.AnchorPoint = Vector2.new(0.5,0.5)
+    button.Position = UDim2.new(0.5,0,0.5,0)
+    button.BackgroundColor3 = Color3.fromRGB(125,255,235)
+    button.BorderSizePixel = 0
+    button.ZIndex = 101
+    button.ClipsDescendants = true
+    button.Parent = screenGui
 
-local shrinkTween = TweenService:Create(logo, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {Size = UDim2.new(0,50,0,50), Position = UDim2.new(0.5,0,0.5,0)})
-shrinkTween:Play()
-shrinkTween.Completed:Wait()
+    local uiCorner = Instance.new("UICorner")
+    uiCorner.CornerRadius = UDim.new(0.5,0)
+    uiCorner.Parent = button
 
-local brightenTween = TweenService:Create(overlay, TweenInfo.new(0.3, Enum.EasingStyle.Quad), {BackgroundTransparency = 1})
-brightenTween:Play()
-brightenTween.Completed:Wait()
+    local circleStroke = Instance.new("UIStroke")
+    circleStroke.Thickness = 4
+    circleStroke.Color = Color3.new(0,0,0)
+    circleStroke.Parent = button
 
-logo:Destroy()
-overlay:Destroy()
+    local buttonLogo = Instance.new("TextLabel")
+    buttonLogo.Size = UDim2.new(0.6,0,0.6,0)
+    buttonLogo.Position = UDim2.new(0.5,0,0.5,0)
+    buttonLogo.AnchorPoint = Vector2.new(0.5,0.5)
+    buttonLogo.Text = "C"
+    buttonLogo.TextScaled = true
+    buttonLogo.Font = Enum.Font.GothamBold
+    buttonLogo.BackgroundTransparency = 1
+    buttonLogo.ZIndex = 102
+    buttonLogo.Parent = button
 
--- ====================
--- Circular Comet Animator Button
--- ====================
-local button = Instance.new("Frame")
-button.Size = UDim2.new(0,80,0,80)
-button.AnchorPoint = Vector2.new(0.5,0.5)
-button.Position = UDim2.new(0.5,0,0.5,0)
-button.BackgroundColor3 = Color3.fromRGB(125,255,235) -- #7dffeb
-button.BorderSizePixel = 0
-button.ZIndex = 101
-button.ClipsDescendants = true
-button.Parent = screenGui
+    local gradientBtn = Instance.new("UIGradient")
+    gradientBtn.Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(0,255,255)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(200,170,255))
+    }
+    gradientBtn.Rotation = 45
+    gradientBtn.Parent = buttonLogo
 
-local uiCorner = Instance.new("UICorner")
-uiCorner.CornerRadius = UDim.new(0.5,0)
-uiCorner.Parent = button
+    local textStroke = Instance.new("UIStroke")
+    textStroke.Thickness = 2
+    textStroke.Color = Color3.new(0,0,0)
+    textStroke.Parent = buttonLogo
 
--- Add black stroke to circle
-local circleStroke = Instance.new("UIStroke")
-circleStroke.Thickness = 4 -- semi-thick
-circleStroke.Color = Color3.new(0,0,0)
-circleStroke.Parent = button
-
--- Gradient "C" inside button
-local buttonLogo = Instance.new("TextLabel")
-buttonLogo.Size = UDim2.new(0.6,0,0.6,0)
-buttonLogo.Position = UDim2.new(0.5,0,0.5,0)
-buttonLogo.AnchorPoint = Vector2.new(0.5,0.5)
-buttonLogo.Text = "C"
-buttonLogo.TextScaled = true
-buttonLogo.Font = Enum.Font.GothamBold -- thicker font
-buttonLogo.BackgroundTransparency = 1
-buttonLogo.ZIndex = 102
-buttonLogo.Parent = button
-
-local gradientBtn = Instance.new("UIGradient")
-gradientBtn.Color = ColorSequence.new{
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(0,255,255)),   -- cyan
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(200,170,255))  -- light purple
-}
-gradientBtn.Rotation = 45
-gradientBtn.Parent = buttonLogo
-buttonLogo.TextColor3 = Color3.new(1,1,1)
-
--- Add black stroke to "C"
-local textStroke = Instance.new("UIStroke")
-textStroke.Thickness = 2 -- semi-thick
-textStroke.Color = Color3.new(0,0,0)
-textStroke.Parent = buttonLogo
-
--- ====================
--- Click toggle with 1-second cooldown
--- ====================
-local active = false
-local canToggle = true
-button.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
-        if canToggle then
-            canToggle = false
-            active = not active
-            if active then
-                button.BackgroundColor3 = Color3.fromRGB(255,0,0)
-                print("Animator Opened!")
-            else
-                button.BackgroundColor3 = Color3.fromRGB(125,255,235) -- revert to #7dffeb
-                print("Animator Closed!")
+    -- Click toggle
+    local active = false
+    local canToggle = true
+    button.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
+            if canToggle then
+                canToggle = false
+                active = not active
+                button.BackgroundColor3 = active and Color3.fromRGB(255,0,0) or Color3.fromRGB(125,255,235)
+                print(active and "Animator Opened!" or "Animator Closed!")
+                task.delay(1, function() canToggle = true end)
             end
-            task.delay(1, function()
-                canToggle = true
+        end
+    end)
+
+    -- Draggable
+    local dragging = false
+    local dragInput, dragStart, startPos
+    button.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = true
+            dragStart = input.Position
+            startPos = button.Position
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then dragging = false end
             end)
         end
-    end
-end)
+    end)
+    button.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseMovement then
+            dragInput = input
+        end
+    end)
+    UserInputService.InputChanged:Connect(function(input)
+        if dragging and input == dragInput then
+            local delta = input.Position - dragStart
+            button.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+        end
+    end)
+end
 
--- ====================
--- Draggable functionality
--- ====================
-local dragging = false
-local dragInput, dragStart, startPos
-
-button.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = true
-        dragStart = input.Position
-        startPos = button.Position
-        input.Changed:Connect(function()
-            if input.UserInputState == Enum.UserInputState.End then
-                dragging = false
-            end
-        end)
-    end
-end)
-
-button.InputChanged:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseMovement then
-        dragInput = input
-    end
-end)
-
-UserInputService.InputChanged:Connect(function(input)
-    if dragging and input == dragInput then
-        local delta = input.Position - dragStart
-        button.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-    end
-end)
+return module
