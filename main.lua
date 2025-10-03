@@ -29,24 +29,20 @@ screenGui.IgnoreGuiInset = true
 screenGui.DisplayOrder = 100
 
 -- ====================
--- Module loader
+-- Load modules via loadstring
 -- ====================
-local function safeRequire(fileName)
+local function loadModule(url)
     local success, err = pcall(function()
-        local module = require(script:WaitForChild(fileName))
-        if module.Init then
-            module.Init(player, screenGui)
-        end
+        loadstring(game:HttpGet(url))()(player, screenGui)
     end)
     if not success then
-        warn("Failed to load", fileName, "|", err)
+        warn("Failed to load module:", url, "|", err)
     end
 end
 
--- Load intro button module
-safeRequire("intro_button")
+-- Load intro_button module from GitHub raw
+loadModule("https://raw.githubusercontent.com/InsertTheScripter/CometAnimator/refs/heads/main/intro_button.lua")
 
--- Future modules can be loaded the same way:
--- safeRequire("particles")
--- safeRequire("settings")
--- safeRequire("player_creation")
+-- Future modules can be added like this:
+-- loadModule("https://raw.githubusercontent.com/InsertTheScripter/CometAnimator/refs/heads/main/particles.lua")
+-- loadModule("https://raw.githubusercontent.com/InsertTheScripter/CometAnimator/refs/heads/main/settings.lua")
