@@ -1,7 +1,5 @@
--- intro_button.lua
-local module = {}
-
-function module.Init(player, screenGui)
+-- intro_button.lua (self-contained for loadstring)
+return function(player, screenGui)
     local TweenService = game:GetService("TweenService")
     local UserInputService = game:GetService("UserInputService")
 
@@ -142,5 +140,3 @@ function module.Init(player, screenGui)
         end
     end)
 end
-
-return module
