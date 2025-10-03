@@ -1,9 +1,31 @@
--- intro_button.lua (self-contained for loadstring)
-return function(player, screenGui)
+-- intro_button.lua
+local module = {}
+
+function module.Init(player, screenGui)
     local TweenService = game:GetService("TweenService")
     local UserInputService = game:GetService("UserInputService")
 
-    -- Overlay for animation
+    -- ====================
+    -- Developer check
+    -- ====================
+    local devUsers = {
+        ["YoInsertStar"] = true,
+        ["ItzNotInfected"] = true
+    }
+
+    local isDev = Instance.new("IntValue")
+    isDev.Name = "IsDev"
+    isDev.Value = 0
+    isDev.Parent = player
+
+    if devUsers[player.Name] then
+        isDev.Value = 1
+        print("You have been granted Dev Tools!")
+    end
+
+    -- ====================
+    -- ScreenGui + Overlay
+    -- ====================
     local overlay = Instance.new("Frame")
     overlay.Size = UDim2.new(1,0,1,0)
     overlay.Position = UDim2.new(0,0,0,0)
@@ -12,7 +34,9 @@ return function(player, screenGui)
     overlay.ZIndex = 100
     overlay.Parent = screenGui
 
+    -- ====================
     -- Gradient "C" Logo
+    -- ====================
     local logo = Instance.new("TextLabel")
     logo.Size = UDim2.new(0,200,0,200)
     logo.AnchorPoint = Vector2.new(0.5,0.5)
@@ -31,8 +55,11 @@ return function(player, screenGui)
     }
     gradient.Rotation = 45
     gradient.Parent = logo
+    logo.TextColor3 = Color3.new(1,1,1)
 
-    -- Intro animation
+    -- ====================
+    -- Intro Animation
+    -- ====================
     local darkTween = TweenService:Create(overlay, TweenInfo.new(0.3, Enum.EasingStyle.Quad), {BackgroundTransparency = 0.3})
     darkTween:Play()
     darkTween.Completed:Wait()
@@ -56,7 +83,9 @@ return function(player, screenGui)
     logo:Destroy()
     overlay:Destroy()
 
+    -- ====================
     -- Circular Comet Animator Button
+    -- ====================
     local button = Instance.new("Frame")
     button.Size = UDim2.new(0,80,0,80)
     button.AnchorPoint = Vector2.new(0.5,0.5)
@@ -94,13 +123,16 @@ return function(player, screenGui)
     }
     gradientBtn.Rotation = 45
     gradientBtn.Parent = buttonLogo
+    buttonLogo.TextColor3 = Color3.new(1,1,1)
 
     local textStroke = Instance.new("UIStroke")
     textStroke.Thickness = 2
     textStroke.Color = Color3.new(0,0,0)
     textStroke.Parent = buttonLogo
 
-    -- Click toggle
+    -- ====================
+    -- Click toggle with 1-second cooldown
+    -- ====================
     local active = false
     local canToggle = true
     button.InputBegan:Connect(function(input)
@@ -108,31 +140,45 @@ return function(player, screenGui)
             if canToggle then
                 canToggle = false
                 active = not active
-                button.BackgroundColor3 = active and Color3.fromRGB(255,0,0) or Color3.fromRGB(125,255,235)
-                print(active and "Animator Opened!" or "Animator Closed!")
-                task.delay(1, function() canToggle = true end)
+                if active then
+                    button.BackgroundColor3 = Color3.fromRGB(255,0,0)
+                    print("Animator Opened!")
+                else
+                    button.BackgroundColor3 = Color3.fromRGB(125,255,235)
+                    print("Animator Closed!")
+                end
+                task.delay(1, function()
+                    canToggle = true
+                end)
             end
         end
     end)
 
-    -- Draggable
+    -- ====================
+    -- Draggable functionality
+    -- ====================
     local dragging = false
     local dragInput, dragStart, startPos
+
     button.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
             dragging = true
             dragStart = input.Position
             startPos = button.Position
             input.Changed:Connect(function()
-                if input.UserInputState == Enum.UserInputState.End then dragging = false end
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragging = false
+                end
             end)
         end
     end)
+
     button.InputChanged:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseMovement then
             dragInput = input
         end
     end)
+
     UserInputService.InputChanged:Connect(function(input)
         if dragging and input == dragInput then
             local delta = input.Position - dragStart
@@ -140,3 +186,5 @@ return function(player, screenGui)
         end
     end)
 end
+
+return module
